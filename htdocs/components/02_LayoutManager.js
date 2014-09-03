@@ -248,13 +248,19 @@ Ensembl.LayoutManager.extend({
     
     var redirectCode = unescape(Ensembl.cookie.get('redirect_mirror'));
 
+    var noRedirectURI = function(uri) {
+      uri = uri.replace(/(\&|\;)?redirect=[^\&\;]+/, '').replace(/(\&|\;)?debugip=[^\&\;]+/, '').replace(/\?[\;\&]+/, '?').replace(/\?$/, '');
+      uri = uri + (uri.match(/\?/) ? ';redirect=no' : '?redirect=no');
+      return uri;
+    };
+
     if (redirectCode && redirectCode !== 'no') {
-      redirectCode      = redirectCode.split(/\|/);
+      redirectCode = redirectCode.split(/\|/);
       if (redirectCode.length >= 2) {
-        var currentURI    = window.location.href.replace(/(\&|\;)?redirect=[^\&\;]+/, '').replace(/(\&|\;)?debugip=[^\&\;]+/, '').replace(/\?[\;\&]+/, '?').replace(/\?$/, '');
+        var currentURI    = noRedirectURI(window.location.href);
         var mirrorName    = redirectCode.shift();
         var remainingTime = parseInt(redirectCode.shift());
-        var mirrorURI     = currentURI.replace(window.location.host, mirrorName);
+        var mirrorURI     = (redirectCode[0] ? noRedirectURI($('<a>').attr('href', redirectCode[0]).prop('href')) : currentURI).replace(window.location.host, mirrorName);
         var messageDiv    = $([
           '<div class="redirect-message hidden">',
           ' <p>You are being redirected to <b><a href="' + mirrorURI + '">', mirrorName, '</a></b> <span class="_redirect_countdown">in ', remainingTime, ' seconds</span>. Click <a class="_redirect_no" href="#">here</a> if you don\'t wish to be redirected.</p>',
