@@ -486,7 +486,7 @@ sub html_template {
   my $species_common_name = $self->species_defs->SPECIES_COMMON_NAME;
   my $max_region_length   = 1000100 * ($self->species_defs->ENSEMBL_GENOME_SIZE || 1);
   my $core_params         = $self->hub ? $self->hub->core_params : {};
-  my $core_params_html    = join '',   map qq(<input type="hidden" name="$_" value="$core_params->{$_}" />), keys %$core_params;
+  my $core_params_html    = join '',   map qq(<input type="hidden" name="$_" value=").$self->clean_HTML($core_params->{$_}).qq(" />), keys %$core_params;
   my $html_tag            = join '',   $self->doc_type, $self->html_tag;
   my $head                = join "\n", map $elements->{$_->[0]} || (), @{$self->head_order};  
   my $body_attrs          = join ' ',  map { sprintf '%s="%s"', $_, $self->{'body_attr'}{$_} } grep $self->{'body_attr'}{$_}, keys %{$self->{'body_attr'}};
